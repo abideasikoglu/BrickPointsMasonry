@@ -14,10 +14,12 @@
   <h1>Get ready!</h1>
   <div id="readyNum" style="font-size:160px">5</div>
 </div>
+
 <div id="stage" style="display:none">
   <div id="qtimer" style="position:fixed; top:20px; left:20px; font-size:48px"></div>
   <h1 id="qtext" style="text-align:center; font-size:48px"></h1>
   <div id="opts" style="display:grid; grid-template-columns:1fr 1fr; gap:20px"></div>
+  <button id="next" style="display:none; font-size:24px; margin-top:20px">Next question</button>
 </div>
 
 <script type="module">
@@ -57,8 +59,9 @@
 
   let offset = 0;
   onValue(ref(db, ".info/serverTimeOffset"), (s) => { offset = s.val() || 0; });
-  let timer;
+  let timer; 
   let run = 0;
+  let current = 0;
   const show = (id, on) => { document.getElementById(id).style.display = on ? "block": "none"; };
 
   onValue(ref(db, "state"), async (snap) => {
@@ -69,7 +72,9 @@
 
     const q = (await get(ref(db, "questions/" + state.question))).val();
     if (myRun !== run) return;
-    
+    current = state.question;
+    document.getElementById("next".style.display = "none";
+
     show("lobby", false);
     const labels = q.type === "truefalse" ? ["True", "False"]: q.options;
     const opts = document.getElementById("opts");
@@ -93,8 +98,11 @@
         show("getready", false); show("stage", true);
         const left = Math.ceil(q.duration - (t - 5));
         if (left > 0) { document.getElementById("qtimer").textContent = left; }
-        else { clearInterval(timer); document.getElementById("qtimer").textContent = "Time's up!"; }
+        else { clearInterval(timer); document.getElementById("qtimer").textContent = "Time's up!"; document.getElementById("next").style.display = "inline-block" }
       }
     }, 200);
   });
+  document.getElementById("next").onclick = () => {
+  set(ref(db, "state"), { question: current + 1, startedAt: serverTimestamp() });
+};
 </script>
