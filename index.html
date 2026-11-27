@@ -16,11 +16,12 @@
     <text id="clockText" x="100" y="120" text-anchor="middle" font-size="60">5</text>
   </svg>
 </div>
+</div id="buttons"></div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
-  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
+  import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
 
   const firebaseConfig = { apiKey: "AIzaSyCrRrSj14sA6WmXGrQavmRepWCw3u1i5Qc",
     authDomain: "brick-and-points.firebaseapp.com",
@@ -68,13 +69,26 @@ if (left > 0) {
 } else {
   clearInterval(timer);
   document.getElementById("clock").style.display = "none";
-  document.getElementById("status").textContent = "Question " + state.question + " is live!";
+  showQuestion(state.question);
 }
       }, 200);
     } else {         
       document.getElementById("Name").style.display = "";
       document.getElementById("Join").style.display = "";
       document.getElementById("status").textContent = "";
+      document.getElementById("buttons").innerHTML = "";
     }
   });
+  async function showQuestion(n) {
+  const q = (await get(ref(db, "questions/" + n))).val();
+  const labels = q.type === "truefalse" ? ["True", "False"] : q.options;
+  const box = document.getElementById("buttons");
+  box.innerHTML = "";
+  document.getElementById("status").textContent = q.text;
+  labels.forEach((label, i) => {
+    const b = document.createElement("button");
+    b.textContent = label;
+    box.appendChild(b);
+  });
+}
 </script>
