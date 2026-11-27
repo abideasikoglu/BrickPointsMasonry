@@ -16,7 +16,7 @@
     <text id="clockText" x="100" y="120" text-anchor="middle" font-size="60">5</text>
   </svg>
 </div>
-<div id="buttons" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; marjin-top:20px">
+<div id="buttons" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px">
 </div>
 
 <script type="module">
@@ -80,8 +80,8 @@ if (left > 0) {
   document.getElementById("status").textContent = q.text;
     labels.forEach((label, i) => {
     const b = document.createElement("button");
-    b.textContent = (q.type === "truefalse" ? "": shapes[i] + " " + label;
-    b.style.cssText = "background" + colours[i] + "; color:white; font-size:28px; padding:40px 10px; border:none; border-radius:12px";
+    b.textContent = (q.type === "truefalse" ? "": shapes[i] + " ") + label;
+    b.style.cssText = "background:" + colours[i] + "; color:white; font-size:28px; padding:40px 10px; border:none; border-radius:12px";
     b.onclick = async () => {
       await set(ref(db, "answers/" + n + "/" + myUid), { choice: i, at: serverTimestamp() });
       box.innerHTML = "";
