@@ -46,42 +46,55 @@
     });
     document.getElementById("count").textContent = count;
   });
+
   document.getElementById("reset").onclick = () => {
-    if (confirm("Clear all players, state and answers?")) remove(ref(db, "players")); remove(ref(db, "state")); remove(ref(db, "answers"));
+    if (confirm("Clear all players, state and answers?")) {
+      remove(ref(db, "players"));
+      remove(ref(db, "state"));
+      remove(ref(db, "answers"));
+    }
   };
+
   document.getElementById("start").onclick = () => {
-    set(ref(db, "state"), {question:1, startedAt: serverTimestamp() });
+    set(ref(db, "state"), { question: 1, startedAt: serverTimestamp() });
   };
-  let offset= 0;
+
+  let offset = 0;
   onValue(ref(db, ".info/serverTimeOffset"), (s) => { offset = s.val() || 0; });
   let timer;
   const colours = ["#e21b3c", "#1368ce", "#d89e00", "#26890c"];
   const shapes = ["▲", "◆", "●", "■"];
-  const show = (id, on) => { document.getElementById(id).style.display = on ? "block": "none"; };
+  const show = (id, on) => { document.getElementById(id).style.display = on ? "block" : "none"; };
+
   onValue(ref(db, "state"), async (snap) => {
     const state = snap.val();
     clearInterval(timer);
     if (!state) { show("lobby", true); show("getready", false); show("stage", false); return; }
+
     const q = (await get(ref(db, "questions/" + state.question))).val();
     show("lobby", false);
-    const labels = q.type === "truefalse" ? ["True", "False"]: q.options;
+    const labels = q.type === "truefalse" ? ["True", "False"] : q.options;
     const opts = document.getElementById("opts");
-    opts.innerHTML= "";
+    opts.innerHTML = "";
     labels.forEach((label, i) => {
       const d = document.createElement("div");
-      d.textContent = (q.type === "truefalse"? "": shapes[i] + " ") + label;
-    d.style.cssText = "background:" + colours[i] + "; color:white; font-size:40px; padding:30px; border-radius:12px";
-    opts.appendChild(d);
-  });  
-  document.getElementById("qtext").textContent = q.text;
-  timer = setInterval(() => {
-    const t = (Date.now() + offset - state.startedAt) / 1000;
-    if (t < 5) {
-      show("getready", false); show("stage", true);
-      const left = Math.ceil(q.duration - (t - 5));
-      if (left > 0) { document.getElementById("qtimer").textContent = left; }
-      else { clearInterval(timer); document.getElementById("qtimer").textContent = "Time's up!" }
-    }
-  }, 200);
-  });      
+      d.textContent = (q.type === "truefalse" ? "" : shapes[i] + " ") + label;
+      d.style.cssText = "background:" + colours[i] + "; color:white; font-size:40px; padding:30px; border-radius:12px";
+      opts.appendChild(d);
+    });
+    document.getElementById("qtext").textContent = q.text;
+
+    timer = setInterval(() => {
+      const t = (Date.now() + offset - state.startedAt) / 1000;
+      if (t < 5) {
+        show("getready", true); show("stage", false);
+        document.getElementById("readyNum").textContent = Math.ceil(5 - t);
+      } else {
+        show("getready", false); show("stage", true);
+        const left = Math.ceil(q.duration - (t - 5));
+        if (left > 0) { document.getElementById("qtimer").textContent = left; }
+        else { clearInterval(timer); document.getElementById("qtimer").textContent = "Time's up!"; }
+      }
+    }, 200);
+  });
 </script>
