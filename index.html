@@ -1,3 +1,31 @@
 <h1>Join the quiz</h1>
 <input id="Name" placeholder="Your name">
 <button id="Join">Join</button>
+<p id="status"></p>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
+
+  const firebaseConfig = { apiKey: "AIzaSyCrRrSj14sA6WmXGrQavmRepWCw3u1i5Qc",
+    authDomain: "brick-and-points.firebaseapp.com",
+    databaseURL: "https://brick-and-points-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "brick-and-points",
+    storageBucket: "brick-and-points.firebasestorage.app",
+    messagingSenderId: "177218825433",
+    appId: "1:177218825433:web:290a672bb63285472322c8"
+ };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  document.getElementById("Join").onclick = async () => {
+    const name = document.getElementById("Name").value.trim();
+    if (!name) return;
+    const { user } = await signInAnonymously(auth);
+    await set(ref(db, "players/" + user.uid), { name: name, score: 0 });
+    document.getElementById("status").textContent = "You're in! Wait for the host.";
+  };
+</script>
