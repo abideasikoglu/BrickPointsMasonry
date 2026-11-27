@@ -21,18 +21,23 @@
   const auth = getAuth(app);
   const db = getDatabase(app);
 
+  let myName = "";
+  
   document.getElementById("Join").onclick = async () => {
     const name = document.getElementById("Name").value.trim();
     if (!name) return;
     const { user } = await signInAnonymously(auth);
     await set(ref(db, "players/" + user.uid), { name: name, score: 0 });
-    document.getElementById("status").textContent = "You're in! Wait for the host.";
+    myName = name;
+    document.getElementById("Name").style.display = "none";
+    document.getElementById("Join").style.display = "none";
+    document.getElementById("status").textContent = "You're in, " + name+ "! Wait for the host.";
   };
 
   onValue(ref(db, "state"), (snapshot) => {
     const state = snapshot.val();
     if (state) {
-      document.getElementById("status").textContent = "Get ready! Question " + state.question;
+      document.getElementById("status").textContent = "Get ready, " + myName + "! Question " + state.question;
     }
   });
 </script>
