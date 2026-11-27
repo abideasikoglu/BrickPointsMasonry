@@ -16,22 +16,14 @@
     <text id="clockText" x="100" y="120" text-anchor="middle" font-size="60">5</text>
   </svg>
 </div>
-<div id="buttons"></div>
+<div id="buttons" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; marjin-top:20px">
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
   import { getDatabase, ref, set, onValue, get, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
-
-  const firebaseConfig = { apiKey: "AIzaSyCrRrSj14sA6WmXGrQavmRepWCw3u1i5Qc",
-    authDomain: "brick-and-points.firebaseapp.com",
-    databaseURL: "https://brick-and-points-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "brick-and-points",
-    storageBucket: "brick-and-points.firebasestorage.app",
-    messagingSenderId: "177218825433",
-    appId: "1:177218825433:web:290a672bb63285472322c8"
- };
-
+  import { firebaseConfig, colours, shapes } from "./common.js";
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getDatabase(app);
@@ -88,7 +80,8 @@ if (left > 0) {
   document.getElementById("status").textContent = q.text;
     labels.forEach((label, i) => {
     const b = document.createElement("button");
-    b.textContent = label;
+    b.textContent = (q.type === "truefalse" ? "": shapes[i] + " " + label;
+    b.style.cssText = "background" + colours[i] + "; color:white; font-size:28px; padding:40px 10px; border:none; border-radius:12px";
     b.onclick = async () => {
       await set(ref(db, "answers/" + n + "/" + myUid), { choice: i, at: serverTimestamp() });
       box.innerHTML = "";
