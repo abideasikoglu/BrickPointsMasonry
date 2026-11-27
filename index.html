@@ -6,7 +6,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
-  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
 
   const firebaseConfig = { apiKey: "AIzaSyCrRrSj14sA6WmXGrQavmRepWCw3u1i5Qc",
     authDomain: "brick-and-points.firebaseapp.com",
@@ -28,4 +28,11 @@
     await set(ref(db, "players/" + user.uid), { name: name, score: 0 });
     document.getElementById("status").textContent = "You're in! Wait for the host.";
   };
+
+  onValue(ref(db, "state"), (snapshot) => {
+    const state = snapshot.val();
+    if (state) {
+      document.getElementById("status").textContent = "Get ready! Question " + state.question;
+    }
+  });
 </script>
