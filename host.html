@@ -1,13 +1,25 @@
+<div id="lobby">
 <h1>Join the Game</h1>
 <button id="reset">New session</button>
 <button id="start">Start</button>
 <img id="qr" alt="QR code">
 <h2>Players: <span id="count">0</span></h2>
 <ul id="players"></ul>
+</div>
+
+<div id="getready" style="display:none; text-align:center">
+  <h1>Get ready!</h1>
+  <div id="readyNum" style="font-size:160px">5</div>
+</div>
+<div id="stage" style="display:none">
+  <div id="qtimer" style="position:fixed; top:20px; left:20px; font-size:48px"></div>
+  <h1 id="qtext" style="text-align:center; font-size:48px"></h1>
+  <div id="opts" style="display:grid; grid-template-columns:1fr 1fr; gap:20px"></div>
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
-  import { getDatabase, ref, onValue, remove, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
+  import { getDatabase, ref, onValue, remove, set, serverTimestamp, get } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
 
   const firebaseConfig = { apiKey: "AIzaSyCrRrSj14sA6WmXGrQavmRepWCw3u1i5Qc",
     authDomain: "brick-and-points.firebaseapp.com",
@@ -40,4 +52,36 @@
   document.getElementById("start").onclick = () => {
     set(ref(db, "state"), {question:1, startedAt: serverTimestamp() });
   };
+  let offset= 0;
+  onValue(ref(db, ".info/serverTimeOffset"), (s) => { offset = s.val() || 0; });
+  let timer;
+  const colours = ["#e21b3c", "#1368ce", "#d89e00", "#26890c"];
+  const shapes = ["▲", "◆", "●", "■"];
+  const show = (id, on) => { document.getElementById(id).style.display = on ? "block": "none"; };
+  onValue(ref(db, "state"), async (snap) => {
+    const state = snap.val();
+    clearInterval(timer);
+    if (!state) { show("lobby", true); show("getready", false); show("stage", false); return; }
+    const q = (await get(ref(db, "questions/" + state.question))).val();
+    show("lobby", false);
+    const label = q.type === "truefalse" ? ["True", "False"]: q.options;
+    const opts = document.getElementById("opts");
+    opts.innerHTML= "";
+    labels.forEach((label, i) => {
+      const d = document.createElement("div");
+      d.textContent = q.type === "truefalse" ? "": shapes[i] + " ") + label;
+    d.style.cssText = "background:" + colours[i] + "; color:white; font-size:40px; padding:30px; border-radius:12px";
+    opts.appendChild(d);
+  });  
+  document.getElementById("qtext").textContent = q.text;
+  timer = setInterval(() => {
+    const t = (Date.now() + offset - state.startedAt) / 1000;
+    if (t < 5) {
+      show("getready", false); show("stage", true);
+      const left = Math.ceil(q.duration - (t - 5);
+      if (left > 0) { document.getElementById("qtimer").textContent = left; }
+      else { clearInterval(timer); document.getElementById("qtimer").textContent = "Time's up!" }
+    }
+  }, 200);
+  });      
 </script>
