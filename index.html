@@ -38,6 +38,10 @@
     const state = snapshot.val();
     if (state) {
       document.getElementById("status").textContent = "Get ready, " + myName + "! Question " + state.question;
+    } else {
+      document.getElementById("Name").style.display = "";
+      document.getElementById("Join").style.display = "";
+      document.getElementById("status").textContent = "";
     }
   });
 </script>
