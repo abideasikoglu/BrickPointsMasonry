@@ -107,12 +107,13 @@
 };
   async function reveal(n) {
   const key = (await get(ref(db, "answerKey/" + n))).val();
+    console.log("key:", key, typeof key);
   const answers = (await get(ref(db, "answers/" + n))).val() || {};
   const counts = [0, 0, 0, 0];
   Object.values(answers).forEach(a => counts[a.choice]++);
   const boxes = document.getElementById("opts").children;
   for (let i = 0; i < boxes.length; i++) {
-    boxes[i].style.opacity = i === key ? "1" : "0.3";
+    boxes[i].style.opacity = i === key ? "1": "0.3";
     boxes[i].textContent += "  (" + counts[i] + ")";
   }
 }
