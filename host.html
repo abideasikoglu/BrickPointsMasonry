@@ -1,12 +1,13 @@
 <h1>Join the quiz</h1>
 <button id="reset">New session</button>
+<button id="start">Start</button>
 <img id="qr" alt="QR code">
 <h2>Players: <span id="count">0</span></h2>
 <ul id="players"></ul>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
-  import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
+  import { getDatabase, ref, onValue, remove, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
 
   const firebaseConfig = { apiKey: "AIzaSyCrRrSj14sA6WmXGrQavmRepWCw3u1i5Qc",
     authDomain: "brick-and-points.firebaseapp.com",
@@ -35,5 +36,8 @@
   });
   document.getElementById("reset").onclick = () => {
     if (confirm("Clear all players?")) remove(ref(db, "players"));
+  };
+  document.getElementById("start").onclick = () => {
+    set(ref(db, "state"), {question:1, startedAt: serverTimestamp() });
   };
 </script>
