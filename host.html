@@ -73,7 +73,7 @@
     const q = (await get(ref(db, "questions/" + state.question))).val();
     if (myRun !== run) return;
     current = state.question;
-    document.getElementById("next".style.display = "none";
+    document.getElementById("next").style.display = "none";
 
     show("lobby", false);
     const labels = q.type === "truefalse" ? ["True", "False"]: q.options;
