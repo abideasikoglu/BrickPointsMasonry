@@ -2,6 +2,14 @@
 <input id="Name" placeholder="Your name">
 <button id="Join">Join</button>
 <p id="status"></p>
+<div id="clock" style="display:none; text-align:center; margin-top:40px">
+  <svg width="200" height="200" viewBox="0 0 200 200">
+    <circle cx="100" cy="100" r="90" fill="none" stroke="#ddd" stroke-width="12"/>
+    <circle id="ring" cx="100" cy="100" r="90" fill="none" stroke="#4a90e2" stroke-width="12"
+            stroke-dasharray="565.5" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+    <text id="clockText" x="100" y="120" text-anchor="middle" font-size="60">5</text>
+  </svg>
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
@@ -44,13 +52,17 @@
     if (state) {
       timer = setInterval(() => {
         const now = Date.now() + offset;
-        const left = Math.ceil(5 - (now - state.startedAt) / 1000);
-        if (left>0) {
-      document.getElementById("status").textContent = "Get ready, " + myName + "!" + left;
-    } else {
-          clearInterval(timer);
-          document.getElementById("status").textContent = "Question " + state.question + " is live!";
-        }
+        const elapsed = (now - state.startedAt) / 1000;
+const left = Math.ceil(5 - elapsed);
+if (left > 0) {
+  document.getElementById("clock").style.display = "block";
+  document.getElementById("clockText").textContent = left;
+  document.getElementById("status").textContent = "Get ready, " + myName + "!";
+} else {
+  clearInterval(timer);
+  document.getElementById("clock").style.display = "none";
+  document.getElementById("status").textContent = "Question " + state.question + " is live!";
+}
       }, 200);
     } else {         
       document.getElementById("Name").style.display = "";
