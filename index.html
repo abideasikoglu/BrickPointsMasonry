@@ -21,7 +21,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
-  import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
+  import { getDatabase, ref, set, onValue, get, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
 
   const firebaseConfig = { apiKey: "AIzaSyCrRrSj14sA6WmXGrQavmRepWCw3u1i5Qc",
     authDomain: "brick-and-points.firebaseapp.com",
@@ -40,7 +40,7 @@
   onValue(ref(db, ".info/serverTimeOffset"), (s) => { offset = s.val() || 0; });
   let timer;
 
-  let myName = "";
+  let myName = ""; let myUid = "";
   
   document.getElementById("Join").onclick = async () => {
     const name = document.getElementById("Name").value.trim();
@@ -48,6 +48,7 @@
     const { user } = await signInAnonymously(auth);
     await set(ref(db, "players/" + user.uid), { name: name, score: 0 });
     myName = name;
+    myUid = user.uid;
     document.getElementById("Name").style.display = "none";
     document.getElementById("Join").style.display = "none";
     document.getElementById("status").textContent = "You're in, " + name+ "! Wait for the host.";
@@ -69,7 +70,7 @@ if (left > 0) {
 } else {
   clearInterval(timer);
   document.getElementById("clock").style.display = "none";
-  showQuestion(state.question);
+  showQuestion(state.question, state.startedAt);
 }
       }, 200);
     } else {         
@@ -79,16 +80,35 @@ if (left > 0) {
       document.getElementById("buttons").innerHTML = "";
     }
   });
-  async function showQuestion(n) {
+  async function showQuestion(n, startedAt) {
   const q = (await get(ref(db, "questions/" + n))).val();
-  const labels = q.type === "truefalse" ? ["True", "False"] : q.options;
+  const labels = q.type === "truefalse" ? ["True", "False"]: q.options;
   const box = document.getElementById("buttons");
   box.innerHTML = "";
   document.getElementById("status").textContent = q.text;
-  labels.forEach((label, i) => {
+    labels.forEach((label, i) => {
     const b = document.createElement("button");
     b.textContent = label;
+    b.onclick = async () => {
+      await set(ref(db, "answers/" + n + "/" + myUid), { choice: i, at: serverTimestamp() });
+      box.innerHTML = "";
+      document.getElementById("status").textContent = "Answer locked in";
+    };
     box.appendChild(b);
   });
+
+  document.getElementById("clock").style.display = "block";
+  clearInterval(timer);
+  timer = setInterval(() => {
+    const now = Date.now() + offset;
+    const left = Math.ceil(q.duration - (now - startedAt - 5000) / 1000);
+    if (left > 0) {
+      document.getElementById("clockText").textContent = left;
+    } else {
+      clearInterval(timer);
+      document.getElementById("clock").style.display = "none";
+      box.innerHTML = "";
+      document.getElementById("status").textContent = "Time's up!";
+    }
+  }, 200);
 }
-</script>
