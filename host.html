@@ -47,7 +47,7 @@
     document.getElementById("count").textContent = count;
   });
   document.getElementById("reset").onclick = () => {
-    if (confirm("Clear all players?")) remove(ref(db, "players")); remove(ref(db, "state")); 
+    if (confirm("Clear all players, state and answers?")) remove(ref(db, "players")); remove(ref(db, "state")); remove(ref(db, "answers));
   };
   document.getElementById("start").onclick = () => {
     set(ref(db, "state"), {question:1, startedAt: serverTimestamp() });
