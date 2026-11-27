@@ -20,14 +20,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
   import { getDatabase, ref, onValue, remove, set, serverTimestamp, get } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
-
-  const firebaseConfig = { apiKey: "AIzaSyCrRrSj14sA6WmXGrQavmRepWCw3u1i5Qc",
-    authDomain: "brick-and-points.firebaseapp.com",
-    databaseURL: "https://brick-and-points-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "brick-and-points",
-    storageBucket: "brick-and-points.firebasestorage.app",
-    messagingSenderId: "177218825433",
-    appId: "1:177218825433:web:290a672bb63285472322c8" };
+  import { firebaseConfig, colours, shapes } from "./common.js";
   const db = getDatabase(initializeApp(firebaseConfig));
 
   const joinUrl = "https://abideasikoglu.github.io/BrickPointsMasonry/";
@@ -62,9 +55,7 @@
   let offset = 0;
   onValue(ref(db, ".info/serverTimeOffset"), (s) => { offset = s.val() || 0; });
   let timer;
-  const colours = ["#e21b3c", "#1368ce", "#d89e00", "#26890c"];
-  const shapes = ["▲", "◆", "●", "■"];
-  const show = (id, on) => { document.getElementById(id).style.display = on ? "block" : "none"; };
+  const show = (id, on) => { document.getElementById(id).style.display = on ? "block": "none"; };
 
   onValue(ref(db, "state"), async (snap) => {
     const state = snap.val();
