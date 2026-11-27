@@ -7,7 +7,7 @@
 <h1 id="title">Join the Game</h1>
 <input id="Name" placeholder="Your name">
 <button id="Join">Join</button>
-<p id="status"></p>
+<p id="status" style ="font-size:26px; font-weight:bold"></p>
 <div id="clock" style="display:none; text-align:center; margin-top:40px">
   <svg viewBox="0 0 200 200" style="width:60vw; max-width:300px; height:auto">
     <circle cx="100" cy="100" r="90" fill="none" stroke="#ddd" stroke-width="12"/>
@@ -81,7 +81,7 @@ if (left > 0) {
     labels.forEach((label, i) => {
     const b = document.createElement("button");
     b.textContent = (q.type === "truefalse" ? "": shapes[i] + " ") + label;
-    b.style.cssText = "background:" + colours[i] + "; color:white; font-size:28px; padding:40px 10px; border:none; border-radius:12px";
+    b.style.cssText = "background:" + colours[i] + "; color:white; font-size:6vw; height:22vh; border:none; border-radius:12px";
     b.onclick = async () => {
       await set(ref(db, "answers/" + n + "/" + myUid), { choice: i, at: serverTimestamp() });
       box.innerHTML = "";
