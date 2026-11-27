@@ -98,11 +98,22 @@
         show("getready", false); show("stage", true);
         const left = Math.ceil(q.duration - (t - 5));
         if (left > 0) { document.getElementById("qtimer").textContent = left; }
-        else { clearInterval(timer); document.getElementById("qtimer").textContent = "Time's up!"; document.getElementById("next").style.display = "inline-block" }
+        else { clearInterval(timer); document.getElementById("qtimer").textContent = "Time's up!"; document.getElementById("next").style.display = "inline-block"; setTimeout(() => reveal(state.question), 1500) }
       }
     }, 200);
   });
   document.getElementById("next").onclick = () => {
-  set(ref(db, "state"), { question: current + 1, startedAt: serverTimestamp() });
+  set(ref(db, "state"), { question: current + 1, startedAt: Date.now() + offset - 5000 });
 };
+  async function reveal(n) {
+  const key = (await get(ref(db, "answerKey/" + n))).val();
+  const answers = (await get(ref(db, "answers/" + n))).val() || {};
+  const counts = [0, 0, 0, 0];
+  Object.values(answers).forEach(a => counts[a.choice]++);
+  const boxes = document.getElementById("opts").children;
+  for (let i = 0; i < boxes.length; i++) {
+    boxes[i].style.opacity = i === key ? "1" : "0.3";
+    boxes[i].textContent += "  (" + counts[i] + ")";
+  }
+}
 </script>
