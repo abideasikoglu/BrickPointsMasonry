@@ -4,7 +4,7 @@
   input, button { font-size: 18px; padding: 10px; }
 </style>
 
-<h1>Join the quiz</h1>
+<h1 id="title">Join the Game</h1>
 <input id="Name" placeholder="Your name">
 <button id="Join">Join</button>
 <p id="status"></p>
@@ -64,6 +64,7 @@ if (left > 0) {
   document.getElementById("clock").style.display = "block";
   document.getElementById("clockText").textContent = left;
   document.getElementById("status").textContent = "Get ready, " + myName + "!";
+  document.getElementById("title").style.display = "none";
 } else {
   clearInterval(timer);
   document.getElementById("clock").style.display = "none";
