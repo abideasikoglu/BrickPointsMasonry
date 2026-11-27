@@ -1,0 +1,35 @@
+<h1>Join the quiz</h1>
+<img id="qr" alt="QR code">
+<h2>Players: <span id="count">0</span></h2>
+<ul id="players"></ul>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
+
+  const firebaseConfig = { apiKey: "AIzaSyCrRrSj14sA6WmXGrQavmRepWCw3u1i5Qc",
+    authDomain: "brick-and-points.firebaseapp.com",
+    databaseURL: "https://brick-and-points-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "brick-and-points",
+    storageBucket: "brick-and-points.firebasestorage.app",
+    messagingSenderId: "177218825433",
+    appId: "1:177218825433:web:290a672bb63285472322c8" };
+  const db = getDatabase(initializeApp(firebaseConfig));
+
+  const joinUrl = "https://abideasikoglu.github.io/BrickPointsMasonry/";
+  document.getElementById("qr").src =
+    "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(joinUrl);
+
+  onValue(ref(db, "players"), (snapshot) => {
+    const list = document.getElementById("players");
+    list.innerHTML = "";
+    let count = 0;
+    snapshot.forEach((child) => {
+      const li = document.createElement("li");
+      li.textContent = child.val().name;
+      list.appendChild(li);
+      count++;
+    });
+    document.getElementById("count").textContent = count;
+  });
+</script>
